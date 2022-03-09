@@ -1,0 +1,14 @@
+{
+  "name": "stop",
+  "type": 1,
+  "description": "Stop a game server",
+  "options": [
+    {
+      "name": "name",
+      "description": "name of the game server",
+      "type": 3,
+      "required": true,
+      "autocomplete": true
+    }
+  ]
+}

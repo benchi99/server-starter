@@ -1,0 +1,14 @@
+{
+  "name": "status",
+  "type": 1,
+  "description": "Check the status of a game server",
+  "options": [
+    {
+      "name": "name",
+      "description": "name of the game server",
+      "type": 3,
+      "required": true,
+      "autocomplete": true
+    }
+  ]
+}

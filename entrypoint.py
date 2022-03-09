@@ -19,9 +19,7 @@ client_secret = os.getenv('CLIENT_SECRET')
 if client_public_key and client_id:
     if args.create_commands:
         print(f'Creating commands for guild with id {args.create_commands}')
-        r = create_application_guild_commands(client_id, client_secret, args.create_commands)
-        if r is not None:
-            print(f'request result: status: {r.status_code}, body: {r.text}')
+        create_application_guild_commands(client_id, client_secret, args.create_commands)
     else:
         print('Starting flask application')
         start_flask_application()
