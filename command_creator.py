@@ -1,6 +1,5 @@
 import requests
-import os
-import json
+from json_load_utils import load_json_data_from_path
 
 DISCORD_API_ENDPOINT = 'https://discord.com/api/v8'
 CREATE_COMMAND_URL = '/applications/{0}/guilds/{1}/commands'
@@ -17,7 +16,7 @@ def create_application_guild_commands(application_id, client_secret, guild_id):
 
         url = f'{DISCORD_API_ENDPOINT}{CREATE_COMMAND_URL.format(application_id, guild_id)}'
 
-        for command_definition in get_command_definitions():
+        for command_definition in load_json_data_from_path('./commands'):
             print(f'Attempting to create command {command_definition["name"]}')
             response = requests.post(url, headers=headers, json=command_definition)
             if response.ok:
@@ -47,13 +46,3 @@ def get_bearer_token(client_id, client_secret):
     else:
         print(f'failed to get a bearer token response code {auth_response.status_code}, body: {auth_response.text}')
         return ''
-
-
-def get_command_definitions():
-    path = './commands'
-
-    for root, dir_names, file_names in os.walk(path):
-        for file_name in file_names:
-            if file_name.endswith('.json'):
-                file = open(f'{path}/{file_name}')
-                yield json.load(file)
