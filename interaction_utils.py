@@ -1,7 +1,6 @@
 from structures import NewInteractionResponseType as InteractionResponseType
 from discord_interactions import InteractionResponseFlags
 from flask import jsonify
-import json
 
 
 def respond_with_message(text_content):
@@ -30,6 +29,6 @@ def respond_with_autocomplete_suggestions(choices):
     return jsonify({
         'type': InteractionResponseType.APPLICATION_COMMAND_AUTOCOMPLETE_RESULT,
         'data': {
-            'choices': json.dumps(choices)
+            'choices': choices
         }
     })

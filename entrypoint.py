@@ -1,6 +1,6 @@
 import os
 from command_creator import create_application_guild_commands
-from command_listener import start_flask_application
+from interaction_listener import start_flask_application
 
 from argparse import ArgumentParser
 

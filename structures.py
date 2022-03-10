@@ -3,7 +3,7 @@ from discord_interactions import InteractionType, InteractionResponseType
 
 class Choice:
     def __init__(self, value):
-        self.name = 'name'
+        self.name = value
         self.value = value
 
 

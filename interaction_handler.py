@@ -1,18 +1,21 @@
 from gameserver_handler import get_gameserver_names
-from command_utils import respond_with_autocomplete_suggestions
+from interaction_utils import respond_with_autocomplete_suggestions, respond_with_message
 from structures import Choice
 
 
 def handle_start(server_name):
     print(f'starting {server_name}')
+    return respond_with_message('started server')
 
 
 def handle_status(server_name):
     print(f'checking status of {server_name}')
+    return respond_with_message('server status')
 
 
 def handle_stop(server_name):
     print(f'stopping {server_name}')
+    return respond_with_message('stopped server')
 
 
 handler_dict = {
@@ -31,11 +34,14 @@ def handle_slash_command_request(command_data):
 
 def handle_autocompletion_request(autocomplete_data):
     partial_parameter_data = get_partial_value(autocomplete_data)
+    print(f'currently inputted data: {partial_parameter_data}')
     choices = list()
 
     for gameserver_name in get_gameserver_names():
         if gameserver_name.startswith(partial_parameter_data):
             choices.append(Choice(gameserver_name).__dict__)
+
+    print(f'current suggestions {choices}')
 
     return respond_with_autocomplete_suggestions(choices)
 
