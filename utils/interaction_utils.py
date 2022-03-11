@@ -13,6 +13,13 @@ def respond_with_message(text_content):
     })
 
 
+def respond_with_deferred_message():
+    """Creates a JSON response that ACKs the interaction, to respond afterwards"""
+    return jsonify({
+        'type': InteractionResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE
+    })
+
+
 def respond_with_ephemeral_message(text_content):
     """Creates a JSON response as an ephemeral text message in channel"""
     return jsonify({

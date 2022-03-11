@@ -8,7 +8,25 @@ Bridge application for starting up game servers from Discord because I'm honestl
 
 Requires Python 3.9 or higher to run
 
-## Local setup
+## Usage
+
+- Run `pip install -r requirements.txt`
+- Define the following environment variables:
+  - CLIENT_ID: your discord application's client id
+  - CLIENT_SECRET: your discord application's client secret
+  - CLIENT_PUBLIC_KEY: your discord application's public key
+- Run the application
+  - To create slash commands in a given guild, run the following:
+```shell
+$ python entrypoint.py --create_commands <guild_id>
+```
+  - To start the Flask application and listen for interactions, run the following:
+```shell
+  $ python entrypoint.py
+```
+
+
+## Local development setup
 
 - Run `pip install -r requirements.txt` 
 - Define the following environment variables:

@@ -2,7 +2,7 @@ import os
 from flask import Flask, request
 from discord_interactions import verify_key_decorator
 from structures import NewInteractionType as InteractionType
-from interaction_handler import handle_slash_command_request, handle_autocompletion_request
+from handlers.interaction_handler import handle_slash_command_request, handle_autocompletion_request
 
 client_public_key = os.getenv('CLIENT_PUBLIC_KEY')
 app = Flask('server-starter')

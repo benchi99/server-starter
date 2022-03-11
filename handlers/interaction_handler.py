@@ -1,5 +1,5 @@
 from gameserver_handler import get_gameserver_names
-from interaction_utils import respond_with_autocomplete_suggestions, respond_with_message
+from utils.interaction_utils import respond_with_autocomplete_suggestions, respond_with_message
 from structures import Choice
 
 
