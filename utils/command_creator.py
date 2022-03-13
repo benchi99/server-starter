@@ -1,7 +1,7 @@
 import requests
-from json_load_utils import load_json_data_from_path
-from api_utils import DISCORD_API_ENDPOINT
+from utils.json_load_utils import load_json_data_from_path
 
+DISCORD_API_ENDPOINT = 'https://discord.com/api/v8'
 CREATE_COMMAND_URL = '/applications/{0}/guilds/{1}/commands'
 OAUTH_TOKEN_URL = '/oauth2/token'
 

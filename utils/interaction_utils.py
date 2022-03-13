@@ -39,3 +39,9 @@ def respond_with_autocomplete_suggestions(choices):
             'choices': choices
         }
     })
+
+
+def get_user_id_from_interaction(interaction_data):
+    user = interaction_data['member']['user']
+    return user['id']
+

@@ -15,7 +15,7 @@ def interactions():
     response = None
 
     if body['type'] == InteractionType.APPLICATION_COMMAND:
-        response = handle_slash_command_request(body['data'])
+        response = handle_slash_command_request(body)
     elif body['type'] == InteractionType.APPLICATION_COMMAND_AUTOCOMPLETE:
         response = handle_autocompletion_request(body['data'])
 

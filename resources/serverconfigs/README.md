@@ -7,15 +7,26 @@ Here will live your configuration files for your game servers. The application w
 `````json
 {
   "name": "name of your game server",
-  "user": "linux user any commands will run under",
+  "user": {
+    "username": "linux user any commands will run under",
+    "password": "username's password"
+  },
   "start": {
-    "script": "here goes your starting script"
+    "allowed_users_to_run_command": [
+      "user_id_in_discord_1",
+      "user_id_in_discord_2"
+    ],
+    "script": "echo 'cool this will totally start my game server'"
   },
   "status": {
-    "script": "here goes your status script"
+    "allowed_users_to_run_command": null,
+    "script": "echo 'aw yes the server's running all fine mate'"
   },
   "stop": {
-    "script": "here goes your stopping script"
+    "allowed_users_to_run_command": [
+      "140100355902930944"
+    ],
+    "script": "echo 'time to sleep now server'"
   }
 }
 `````
