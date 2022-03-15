@@ -24,19 +24,30 @@ def perform_action(action_info: ServerActionInfo):
         if gameserver_config['name'] == action_info.name:
             user = gameserver_config['user']
             desired_script = gameserver_config[action_info.action_type]['script']
-            # command = f' echo {user["password"]} | sudo -S -u {user["username"]} \'{desired_script}\''
-            command = 'whoami'
+            command = f' echo {user["password"]} | sudo -S -u {user["username"]} \'{desired_script}\''
 
-            action_command = subprocess.run(command, text=True, capture_output=True)
+            action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
             try:
                 action_command.check_returncode()
                 print(f'hey sick the command ran just fine and it printed {action_command.stdout}')
-                action_result_message = get_success_message_for_action(action_info.action_type, action_info.name)
+                if action_info == ActionType.STATUS:
+                    action_result_message = get_status_message(action_command.stdout, action_info.name)
+                else:
+                    action_result_message = get_success_message_for_action(action_info.action_type, action_info.name)
             except subprocess.CalledProcessError as e:
-                print('fuck the script failed to run dude what the hell')
-                action_result_message = get_failure_message_for_action(action_info.action_type, action_info.name, e)
+                if e.returncode == 1:
+                    print('fuck the script failed to run dude what the hell')
+                    action_result_message \
+                        = get_fatal_failure_message_for_action(action_info.action_type, action_info.name, e)
+                else:
+                    print('something went wrong but the script might have gone thru')
+                    action_result_message = get_failure_message_for_action(action_info.action_type, action_info.name, e)
 
     send_followup_response(action_result_message, action_info)
+
+
+def get_status_message(server_name, console_output) -> str:
+    return f'Server status for {server_name}: {console_output}'
 
 
 def get_success_message_for_action(action: ActionType, name: str) -> str:
@@ -46,13 +57,25 @@ def get_success_message_for_action(action: ActionType, name: str) -> str:
         return f'Game server {name} has stopped successfully'
 
 
-def get_failure_message_for_action(action: ActionType, name: str, e: subprocess.CalledProcessError) -> str:
+def get_failure_message_for_action(action: ActionType, name, e: subprocess.CalledProcessError) -> str:
     if action is ActionType.START:
         return f'The startup script for {name} exited with a non-zero code (code {e.returncode}).' \
-               f' This was the console output: ```{e.stdout}```'
+               f' This was the console output: ```{e.stdout + e.stderr}```'
     elif action is ActionType.STATUS:
         return f'The script to fetch the status for {name} exited with a non-zero code (code {e.returncode}). ' \
-            f' This was the console output: ```{e.stdout}```'
+               f' This was the console output: ```{e.stdout + e.stderr}```'
     elif action is ActionType.STOP:
         return f'The script for stopping {name} exited with a non-zero code (code {e.returncode}).' \
-            f' This was the console output: ```{e.stdout}```'
+               f' This was the console output: ```{e.stdout + e.stderr}```'
+
+
+def get_fatal_failure_message_for_action(action: ActionType, name: str, e: subprocess.CalledProcessError) -> str:
+    if action is ActionType.START:
+        return f'The startup script for {name} ran into a fatal error and did not start up.' \
+               f' This was the console output: ```{e.stdout + e.stderr}```'
+    elif action is ActionType.STATUS:
+        return f'The script to fetch the status for {name} exited with a non-zero code (code {e.returncode}). ' \
+               f' This was the console output: ```{e.stdout + e.stderr}```'
+    elif action is ActionType.STOP:
+        return f'The script for stopping {name} ran into a fatal error and did not stop.' \
+               f' The server is most likely still running. This was the console output: ```{e.stdout + e.stderr}```'
