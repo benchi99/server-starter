@@ -24,7 +24,7 @@ def perform_action(action_info: ServerActionInfo):
         if gameserver_config['name'] == action_info.name:
             user = gameserver_config['user']
             desired_script = gameserver_config[action_info.action_type]['script']
-            command = f' echo {user["password"]} | sudo -S -u {user["username"]} \'{desired_script}\''
+            command = f'sudo -S -u {user} \'{desired_script}\''
 
             action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
             try:

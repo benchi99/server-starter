@@ -7,10 +7,7 @@ Here will live your configuration files for your game servers. The application w
 `````json
 {
   "name": "name of your game server",
-  "user": {
-    "username": "linux user any commands will run under",
-    "password": "username's password"
-  },
+  "user": "linux user any commands will run under",
   "start": {
     "allowed_users_to_run_command": [
       "user_id_in_discord_1",
