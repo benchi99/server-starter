@@ -22,6 +22,3 @@ def interactions():
     print(f'generated response body: {response.json}')
     return response
 
-
-def start_flask_application():
-    app.run()

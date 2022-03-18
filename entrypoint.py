@@ -1,6 +1,6 @@
 import os
+from interaction_listener import app
 from utils.command_creator import create_application_guild_commands
-from interaction_listener import start_flask_application
 from argparse import ArgumentParser
 
 parser = ArgumentParser(description='Bridge application to start/stop game servers with Discord app commands')
@@ -21,7 +21,7 @@ if client_public_key and client_id:
         create_application_guild_commands(client_id, client_secret, args.create_commands)
     else:
         print(f'Starting flask application')
-        start_flask_application()
+        app.run()
 else:
     print('client public key and app id must set as environment variables for normal operation')
     exit(1)
