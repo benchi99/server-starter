@@ -3,7 +3,7 @@ from structures import ServerActionInfo
 
 
 def send_followup_response(text_content, action_info: ServerActionInfo, ephemeral=False):
-    if action_info.interaction_token != '' or None:
+    if action_info.interaction_token is None:
         json_data = {
             'content': text_content
         }
@@ -21,3 +21,4 @@ def send_followup_response(text_content, action_info: ServerActionInfo, ephemera
             print('responded to deferred interaction properly mate sick 😎')
     else:
         print('no interaction token present - not sending response to discord')
+        print(f'message that was going to say said the following: {text_content}')
