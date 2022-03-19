@@ -37,13 +37,15 @@ def perform_action(action_info: ServerActionInfo):
             except subprocess.CalledProcessError as e:
                 if e.returncode == 1:
                     print('fuck the script failed to run dude what the hell')
+                    print(f'stdout: {e.stdout}')
+                    print(f'stderr: {e.stderr}')
                     action_result_message \
                         = get_fatal_failure_message_for_action(action_info.action_type, action_info.name, e)
                 else:
                     print('something went wrong but the script might have gone thru')
                     action_result_message = get_failure_message_for_action(action_info.action_type, action_info.name, e)
 
-    send_followup_response(action_result_message, action_info)
+    # send_followup_response(action_result_message, action_info)
 
 
 def get_status_message(server_name, console_output) -> str:
