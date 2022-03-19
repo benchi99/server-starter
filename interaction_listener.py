@@ -10,7 +10,7 @@ client_public_key = os.getenv('CLIENT_PUBLIC_KEY')
 app = Flask('server-starter')
 
 
-@app.route('/start', method=['GET'])
+@app.route('/start', methods=['GET'])
 def start_server():
     args = request.args.to_dict()
     server_name = args.get('name')

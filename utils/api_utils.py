@@ -3,7 +3,7 @@ from structures import ServerActionInfo
 
 
 def send_followup_response(text_content, action_info: ServerActionInfo, ephemeral=False):
-    if action_info.interaction_token is not '' or None:
+    if action_info.interaction_token != '' or None:
         json_data = {
             'content': text_content
         }
