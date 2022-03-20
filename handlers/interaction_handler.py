@@ -8,7 +8,7 @@ from handlers.gameserver_handler \
 
 
 def prepare_server_action_data(server_name, interaction_data, action_type):
-    if invoking_user_can_run_command(interaction_data, server_name, action_type):
+    if invoking_user_can_run_command(server_name, interaction_data, action_type):
         print(f'starting {server_name}')
         startup_info = ServerActionInfo(server_name, action_type, interaction_data['token'])
         thread = Thread(target=perform_action, args=(startup_info,))

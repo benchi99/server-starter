@@ -21,7 +21,7 @@ def get_gameserver_configuration_by_name(name):
 def perform_action(action_info: ServerActionInfo):
     password = os.getenv('PASS')
 
-    if password is None:
+    if password is not None:
         action_result_message = None
 
         for gameserver_config in get_gameserver_configurations():
@@ -53,7 +53,8 @@ def perform_action(action_info: ServerActionInfo):
 
         send_followup_response(action_result_message, action_info)
     else:
-        print('password was not set - nothing was run, no followup response sent')
+        print('password was not set - nothing was run')
+        send_followup_response('No password for running servers has been set, nothing was executed', action_info)
 
 
 def get_status_message(server_name, console_output) -> str:
@@ -61,31 +62,31 @@ def get_status_message(server_name, console_output) -> str:
 
 
 def get_success_message_for_action(action: ActionType, name: str) -> str:
-    if action is ActionType.START:
+    if action == ActionType.START:
         return f'Game server {name} has been initiated, it may take some time to be up'
-    elif action is ActionType.STOP:
+    elif action == ActionType.STOP:
         return f'Game server {name} has stopped successfully'
 
 
-def get_failure_message_for_action(action: ActionType, name, e: subprocess.CalledProcessError) -> str:
-    if action is ActionType.START:
+def get_failure_message_for_action(action: ActionType, name: str, e: subprocess.CalledProcessError) -> str:
+    if action == ActionType.START:
         return f'The startup script for {name} exited with a non-zero code (code {e.returncode}).' \
                f' This was the console output: ```{e.stdout + e.stderr}```'
-    elif action is ActionType.STATUS:
+    elif action == ActionType.STATUS:
         return f'The script to fetch the status for {name} exited with a non-zero code (code {e.returncode}). ' \
                f' This was the console output: ```{e.stdout + e.stderr}```'
-    elif action is ActionType.STOP:
+    elif action == ActionType.STOP:
         return f'The script for stopping {name} exited with a non-zero code (code {e.returncode}).' \
                f' This was the console output: ```{e.stdout + e.stderr}```'
 
 
 def get_fatal_failure_message_for_action(action: ActionType, name: str, e: subprocess.CalledProcessError) -> str:
-    if action is ActionType.START:
+    if action == ActionType.START:
         return f'The startup script for {name} ran into a fatal error and did not start up.' \
                f' This was the console output: ```{e.stdout + e.stderr}```'
-    elif action is ActionType.STATUS:
+    elif action == ActionType.STATUS:
         return f'The script to fetch the status for {name} exited with a non-zero code (code {e.returncode}). ' \
                f' This was the console output: ```{e.stdout + e.stderr}```'
-    elif action is ActionType.STOP:
+    elif action == ActionType.STOP:
         return f'The script for stopping {name} ran into a fatal error and did not stop.' \
                f' The server is most likely still running. This was the console output: ```{e.stdout + e.stderr}```'

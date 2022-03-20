@@ -21,4 +21,3 @@ def interactions():
 
     print(f'generated response body: {response.json}')
     return response
-
