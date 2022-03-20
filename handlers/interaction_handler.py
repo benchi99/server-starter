@@ -32,7 +32,7 @@ def handle_autocompletion_request(autocomplete_data):
 
     for gameserver_config in get_gameserver_configurations():
         if gameserver_config['name'].startswith(partial_parameter_data):
-            choices.append(Choice(gameserver_config).__dict__)
+            choices.append(Choice(gameserver_config['name']).__dict__)
 
     print(f'current suggestions {choices}')
 
