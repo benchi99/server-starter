@@ -1,3 +1,4 @@
+import os
 from utils.json_load_utils import load_json_data_from_path
 import subprocess
 from structures import ServerActionInfo, ActionType
@@ -18,34 +19,41 @@ def get_gameserver_configuration_by_name(name):
 
 
 def perform_action(action_info: ServerActionInfo):
-    action_result_message = None
+    password = os.getenv('PASS')
 
-    for gameserver_config in get_gameserver_configurations():
-        if gameserver_config['name'] == action_info.name:
-            user = gameserver_config['user']
-            desired_script = gameserver_config[action_info.action_type]['script']
-            command = f'sudo -S -u {user} \'{desired_script}\''
+    if password is None:
+        action_result_message = None
 
-            action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
-            try:
-                action_command.check_returncode()
-                print(f'hey sick the command ran just fine and it printed {action_command.stdout}')
-                if action_info == ActionType.STATUS:
-                    action_result_message = get_status_message(action_command.stdout, action_info.name)
-                else:
-                    action_result_message = get_success_message_for_action(action_info.action_type, action_info.name)
-            except subprocess.CalledProcessError as e:
-                if e.returncode == 1:
-                    print('fuck the script failed to run dude what the hell')
-                    print(f'stdout: {e.stdout}')
-                    print(f'stderr: {e.stderr}')
-                    action_result_message \
-                        = get_fatal_failure_message_for_action(action_info.action_type, action_info.name, e)
-                else:
-                    print('something went wrong but the script might have gone thru')
-                    action_result_message = get_failure_message_for_action(action_info.action_type, action_info.name, e)
+        for gameserver_config in get_gameserver_configurations():
+            if gameserver_config['name'] == action_info.name:
+                user = gameserver_config['user']
+                desired_script = gameserver_config[action_info.action_type]['script']
+                command = f' echo \'{password}\' | sudo -S -u {user} \'{desired_script}\''
 
-    # send_followup_response(action_result_message, action_info)
+                action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
+                try:
+                    action_command.check_returncode()
+                    print(f'hey sick the command ran just fine and it printed {action_command.stdout}')
+                    if action_info == ActionType.STATUS:
+                        action_result_message = get_status_message(action_command.stdout, action_info.name)
+                    else:
+                        action_result_message \
+                            = get_success_message_for_action(action_info.action_type, action_info.name)
+                except subprocess.CalledProcessError as e:
+                    if e.returncode == 1:
+                        print('fuck the script failed to run dude what the hell')
+                        print(f'stdout: {e.stdout}')
+                        print(f'stderr: {e.stderr}')
+                        action_result_message \
+                            = get_fatal_failure_message_for_action(action_info.action_type, action_info.name, e)
+                    else:
+                        print('something went wrong but the script might have gone thru')
+                        action_result_message \
+                            = get_failure_message_for_action(action_info.action_type, action_info.name, e)
+
+        send_followup_response(action_result_message, action_info)
+    else:
+        print('password was not set - nothing was run, no followup response sent')
 
 
 def get_status_message(server_name, console_output) -> str:
