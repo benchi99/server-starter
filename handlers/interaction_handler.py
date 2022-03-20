@@ -52,6 +52,8 @@ def invoking_user_can_run_command(server_name, interaction_data, action_type):
 
     if game_config is not None:
         allowed_users = game_config[action_type]['allowed_users_to_run_command']
+        # TODO: This doesn't actually handle properly None properly
+        #  (when None => anyone should be able to run the command)
         return True if user_id in allowed_users or allowed_users is None else False
 
     return False
