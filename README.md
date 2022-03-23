@@ -10,7 +10,7 @@ Requires Python 3.8 or higher to run
 
 ## Usage
 
-It is highly encouraged to utilise Linux as your OS for the best experience.
+It is highly encouraged to utilise any flavour of Linux as your OS for the best experience.
 
 - Install the following packages with your package manager of choice
 ```shell
