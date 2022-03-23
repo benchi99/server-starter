@@ -1,3 +1,5 @@
+wheel
+uwsgi
 flask
 discord-interactions
 requests
