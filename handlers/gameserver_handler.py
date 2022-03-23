@@ -35,7 +35,7 @@ def perform_action(action_info: ServerActionInfo):
                     action_command.check_returncode()
                     print(f'hey sick the command ran just fine and it printed {action_command.stdout}')
                     if action_info == ActionType.STATUS:
-                        action_result_message = get_status_message(action_command.stdout, action_info.name)
+                        action_result_message = get_status_message(action_info.name, action_command.stdout)
                     else:
                         action_result_message \
                             = get_success_message_for_action(action_info.action_type, action_info.name)
