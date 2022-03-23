@@ -33,18 +33,15 @@ def perform_action(action_info: ServerActionInfo):
                 action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
                 try:
                     action_command.check_returncode()
-                    stdout = action_command.stdout
-                    print(f'hey sick the command ran just fine and it printed {stdout}')
-                    if action_info == ActionType.STATUS:
-                        action_result_message = get_status_message(action_info.name, stdout)
-                    else:
-                        action_result_message \
-                            = get_success_message_for_action(action_info.action_type, action_info.name)
+                    print(f'hey sick the command ran just fine and it printed {action_command.stdout}')
+                    action_result_message \
+                        = get_success_message_for_action(action_info.action_type, action_info.name)
                 except subprocess.CalledProcessError as e:
                     if e.returncode == 1:
-                        print('fuck the script failed to run dude what the hell')
-                        print(f'stdout: {e.stdout}')
-                        print(f'stderr: {e.stderr}')
+                        if action_info.action_type != ActionType.STATUS:
+                            print('fuck the script failed to run dude what the hell')
+                            print(f'stdout: {e.stdout}')
+                            print(f'stderr: {e.stderr}')
                         action_result_message \
                             = get_fatal_failure_message_for_action(action_info.action_type, action_info.name, e)
                     else:
@@ -65,6 +62,8 @@ def get_status_message(server_name, console_output) -> str:
 def get_success_message_for_action(action: ActionType, name: str) -> str:
     if action == ActionType.START:
         return f'Game server {name} has been initiated, it may take some time to be up'
+    elif action == ActionType.STATUS:
+        return f'Server status of {name}: Server is running.'
     elif action == ActionType.STOP:
         return f'Game server {name} has stopped successfully'
 
@@ -85,9 +84,8 @@ def get_fatal_failure_message_for_action(action: ActionType, name: str, e: subpr
     if action == ActionType.START:
         return f'The startup script for {name} ran into a fatal error and did not start up.' \
                f' This was the console output: ```{e.stdout + e.stderr}```'
-    elif action == ActionType.STATUS:
-        return f'The script to fetch the status for {name} exited with a non-zero code (code {e.returncode}). ' \
-               f' This was the console output: ```{e.stdout + e.stderr}```'
+    elif action == ActionType.STATUS:   # Return code 1 for status scripts means server is not running
+        return f'Server status for {name}: Server is not running'
     elif action == ActionType.STOP:
         return f'The script for stopping {name} ran into a fatal error and did not stop.' \
                f' The server is most likely still running. This was the console output: ```{e.stdout + e.stderr}```'
