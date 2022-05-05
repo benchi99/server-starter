@@ -26,9 +26,7 @@ def perform_action(action_info: ServerActionInfo):
 
         for gameserver_config in get_gameserver_configurations():
             if gameserver_config['name'] == action_info.name:
-                user = gameserver_config['user']
-                desired_script = gameserver_config[action_info.action_type]['script']
-                command = f' echo \'{password}\' | sudo -S -u {user} {desired_script}'
+                command = get_command_to_run(gameserver_config, password, action_info)
 
                 action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
                 try:
@@ -53,6 +51,24 @@ def perform_action(action_info: ServerActionInfo):
     else:
         print('password was not set - nothing was run')
         send_followup_response('No password for running servers has been set, nothing was executed', action_info)
+
+
+def get_command_to_run(gameserver_config, password, action_info: ServerActionInfo) -> str:
+    user = gameserver_config['user']
+    desired_script = gameserver_config[action_info.action_type]['script']
+    return f' echo \'{password}\' | sudo -S -u {user} {desired_script}'
+
+
+def can_requested_action_be_executed(action_info) -> bool:
+    if action_info.action_type == ActionType.START:
+        return not is_requested_server_currently_running(action_info)
+    elif action_info.action_type == ActionType.STOP:
+        return is_requested_server_currently_running(action_info)
+    return False
+
+
+def is_requested_server_currently_running(action_info) -> bool:
+    return False
 
 
 def get_status_message(server_name, console_output) -> str:
