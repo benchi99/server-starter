@@ -26,26 +26,31 @@ def perform_action(action_info: ServerActionInfo):
 
         for gameserver_config in get_gameserver_configurations():
             if gameserver_config['name'] == action_info.name:
-                command = get_command_to_run(gameserver_config, password, action_info)
+                if can_requested_action_be_executed(gameserver_config, password, action_info):
+                    command = get_command_to_run(gameserver_config, password, action_info)
 
-                action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
-                try:
-                    action_command.check_returncode()
-                    print(f'hey sick the command ran just fine and it printed {action_command.stdout}')
+                    action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
+                    try:
+                        action_command.check_returncode()
+                        print(f'hey sick the command ran just fine and it printed {action_command.stdout}')
+                        action_result_message \
+                            = get_success_message_for_action(action_info.action_type, action_info.name)
+                    except subprocess.CalledProcessError as e:
+                        if e.returncode == 1:
+                            if action_info.action_type != ActionType.STATUS:
+                                print('fuck the script failed to run dude what the hell')
+                                print(f'stdout: {e.stdout}')
+                                print(f'stderr: {e.stderr}')
+                            action_result_message \
+                                = get_fatal_failure_message_for_action(action_info.action_type, action_info.name, e)
+                        else:
+                            print('something went wrong but the script might have gone thru')
+                            action_result_message \
+                                = get_failure_message_for_action(action_info.action_type, action_info.name, e)
+                else:
+                    server_status_message = 'running' if action_info.action_type == ActionType.START else 'stopped'
                     action_result_message \
-                        = get_success_message_for_action(action_info.action_type, action_info.name)
-                except subprocess.CalledProcessError as e:
-                    if e.returncode == 1:
-                        if action_info.action_type != ActionType.STATUS:
-                            print('fuck the script failed to run dude what the hell')
-                            print(f'stdout: {e.stdout}')
-                            print(f'stderr: {e.stderr}')
-                        action_result_message \
-                            = get_fatal_failure_message_for_action(action_info.action_type, action_info.name, e)
-                    else:
-                        print('something went wrong but the script might have gone thru')
-                        action_result_message \
-                            = get_failure_message_for_action(action_info.action_type, action_info.name, e)
+                        = f'The action cannot be performed, the server is already {server_status_message}!'
 
         send_followup_response(action_result_message, action_info)
     else:
@@ -59,20 +64,25 @@ def get_command_to_run(gameserver_config, password, action_info: ServerActionInf
     return f' echo \'{password}\' | sudo -S -u {user} {desired_script}'
 
 
-def can_requested_action_be_executed(action_info) -> bool:
+def can_requested_action_be_executed(gameserver_config, password, action_info) -> bool:
     if action_info.action_type == ActionType.START:
-        return not is_requested_server_currently_running(action_info)
+        return not is_requested_server_currently_running(gameserver_config, password, action_info)
     elif action_info.action_type == ActionType.STOP:
-        return is_requested_server_currently_running(action_info)
+        return is_requested_server_currently_running(gameserver_config, password, action_info)
     return False
 
 
-def is_requested_server_currently_running(action_info) -> bool:
-    return False
+def is_requested_server_currently_running(gameserver_config, password, action_info) -> bool:
+    # dummy copy, won't require interaction token since it won't be used to make requests to discord
+    new_action_info = ServerActionInfo(name=action_info.name, action_type=ActionType.STATUS, interaction_token='')
+    command = get_command_to_run(gameserver_config, password, new_action_info)
+    status_command = subprocess.run(command, text=True, capture_output=True, shell=True)
 
-
-def get_status_message(server_name, console_output) -> str:
-    return f'Server status for {server_name}: {console_output}'
+    try:
+        status_command.check_returncode()
+        return True
+    except subprocess.CalledProcessError:
+        return False
 
 
 def get_success_message_for_action(action: ActionType, name: str) -> str:
