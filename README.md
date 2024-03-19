@@ -2,9 +2,9 @@
 
 Bridge application for starting up game servers from Discord because I'm honestly sick of having to SSH into my VPS y'know
 
-> Why spend one minute doing this task when I could spend a month automating it?
+> That's how you turn a 5 hour task, into a one and a half month task. Because I'm a programmer, and that's what we do.
 > 
-> _- Literally every developer ever_
+> _- Miachel Reeves, April 1st, 2022 _
 
 Requires Python 3.8 or higher to run
 
