@@ -49,6 +49,7 @@ def perform_action(action_info: ServerActionInfo):
                                 = get_failure_message_for_action(action_info.action_type, action_info.name, e)
                 else:
                     server_status_message = 'running' if action_info.action_type == ActionType.START else 'stopped'
+                    print(f'Tried {server_status_message} game server {action_info.name} but it is already in that state')
                     action_result_message \
                         = f'The action cannot be performed, the server is already {server_status_message}!'
 
