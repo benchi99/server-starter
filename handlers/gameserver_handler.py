@@ -67,6 +67,8 @@ def get_command_to_run(gameserver_config, password, action_info: ServerActionInf
 def can_requested_action_be_executed(gameserver_config, password, action_info) -> bool:
     if action_info.action_type == ActionType.START:
         return not is_requested_server_currently_running(gameserver_config, password, action_info)
+    elif action_info.action_type == ActionType.STATUS:
+        return True  # checking for status should always be allowed
     elif action_info.action_type == ActionType.STOP:
         return is_requested_server_currently_running(gameserver_config, password, action_info)
     return False
@@ -110,7 +112,7 @@ def get_fatal_failure_message_for_action(action: ActionType, name: str, e: subpr
     if action == ActionType.START:
         return f'The startup script for {name} ran into a fatal error and did not start up.' \
                f' This was the console output: ```{e.stdout + e.stderr}```'
-    elif action == ActionType.STATUS:   # Return code 1 for status scripts means server is not running
+    elif action == ActionType.STATUS:  # Return code 1 for status scripts means server is not running
         return f'Server status for {name}: Server is not running'
     elif action == ActionType.STOP:
         return f'The script for stopping {name} ran into a fatal error and did not stop.' \

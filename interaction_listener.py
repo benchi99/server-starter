@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from discord_interactions import verify_key_decorator
 from structures import NewInteractionType as InteractionType
 from handlers.interaction_handler import handle_slash_command_request, handle_autocompletion_request
@@ -21,3 +21,8 @@ def interactions():
 
     print(f'generated response body: {response.json}')
     return response
+
+
+@app.route('/health', methods=['GET'])
+def test():
+    return jsonify({'status': 'UP'})

@@ -4,7 +4,7 @@ Bridge application for starting up game servers from Discord because I'm honestl
 
 > That's how you turn a 5 hour task, into a one and a half month task. Because I'm a programmer, and that's what we do.
 > 
-> _- Miachel Reeves, April 1st, 2022 _
+> -> Michael Reeves, April 1st, 2022
 
 Requires Python 3.8 or higher to run
 
