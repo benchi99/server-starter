@@ -22,41 +22,41 @@ def perform_action(action_info: ServerActionInfo):
     password = os.getenv('PASS')
 
     if password is not None:
-        action_result_message = None
+        result_message = None
 
         for gameserver_config in get_gameserver_configurations():
             if gameserver_config['name'] == action_info.name:
-                if can_requested_action_be_executed(gameserver_config, password, action_info):
-                    command = get_command_to_run(gameserver_config, password, action_info)
+                result_message = start_gameserver(gameserver_config, password, action_info)
 
-                    action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
-                    try:
-                        action_command.check_returncode()
-                        print(f'hey sick the command ran just fine and it printed {action_command.stdout}')
-                        action_result_message \
-                            = get_success_message_for_action(action_info.action_type, action_info.name)
-                    except subprocess.CalledProcessError as e:
-                        if e.returncode == 1:
-                            if action_info.action_type != ActionType.STATUS:
-                                print('fuck the script failed to run dude what the hell')
-                                print(f'stdout: {e.stdout}')
-                                print(f'stderr: {e.stderr}')
-                            action_result_message \
-                                = get_fatal_failure_message_for_action(action_info.action_type, action_info.name, e)
-                        else:
-                            print('something went wrong but the script might have gone thru')
-                            action_result_message \
-                                = get_failure_message_for_action(action_info.action_type, action_info.name, e)
-                else:
-                    server_status_message = 'running' if action_info.action_type == ActionType.START else 'stopped'
-                    print(f'Tried {server_status_message} game server {action_info.name} but its already in that state')
-                    action_result_message \
-                        = f'The action cannot be performed, the server is already {server_status_message}!'
-
-        send_followup_response(action_result_message, action_info)
+        send_followup_response(result_message, action_info)
     else:
         print('password was not set - nothing was run')
         send_followup_response('No password for running servers has been set, nothing was executed', action_info)
+
+
+def start_gameserver(gameserver_config, password, action_info: ServerActionInfo) -> str:
+    if can_requested_action_be_executed(gameserver_config, password, action_info):
+        command = get_command_to_run(gameserver_config, password, action_info)
+
+        action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
+        try:
+            action_command.check_returncode()
+            print(f'hey sick the command ran just fine and it printed {action_command.stdout}')
+            return get_success_message_for_action(action_info.action_type, action_info.name)
+        except subprocess.CalledProcessError as e:
+            if e.returncode == 1:
+                if action_info.action_type != ActionType.STATUS:
+                    print('fuck the script failed to run dude what the hell')
+                    print(f'stdout: {e.stdout}')
+                    print(f'stderr: {e.stderr}')
+                return get_fatal_failure_message_for_action(action_info.action_type, action_info.name, e)
+            else:
+                print('something went wrong but the script might have gone thru')
+                return get_failure_message_for_action(action_info.action_type, action_info.name, e)
+    else:
+        server_status_message = 'running' if action_info.action_type == ActionType.START else 'stopped'
+        print(f'Tried {server_status_message} game server {action_info.name} but its already in that state')
+        return f'The action cannot be performed, the server is already {server_status_message}!'
 
 
 def get_command_to_run(gameserver_config, password, action_info: ServerActionInfo) -> str:
