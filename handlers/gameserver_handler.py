@@ -26,7 +26,8 @@ def perform_action(action_info: ServerActionInfo):
 
         for gameserver_config in get_gameserver_configurations():
             if gameserver_config['name'] == action_info.name:
-                result_message = start_gameserver(gameserver_config, password, action_info)
+                result_message = execute_action(gameserver_config, password, action_info)
+                break
 
         send_followup_response(result_message, action_info)
     else:
@@ -34,29 +35,33 @@ def perform_action(action_info: ServerActionInfo):
         send_followup_response('No password for running servers has been set, nothing was executed', action_info)
 
 
-def start_gameserver(gameserver_config, password, action_info: ServerActionInfo) -> str:
-    if can_requested_action_be_executed(gameserver_config, password, action_info):
-        command = get_command_to_run(gameserver_config, password, action_info)
-
-        action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
-        try:
-            action_command.check_returncode()
-            print(f'hey sick the command ran just fine and it printed {action_command.stdout}')
-            return get_success_message_for_action(action_info.action_type, action_info.name)
-        except subprocess.CalledProcessError as e:
-            if e.returncode == 1:
-                if action_info.action_type != ActionType.STATUS:
-                    print('fuck the script failed to run dude what the hell')
-                    print(f'stdout: {e.stdout}')
-                    print(f'stderr: {e.stderr}')
-                return get_fatal_failure_message_for_action(action_info.action_type, action_info.name, e)
-            else:
-                print('something went wrong but the script might have gone thru')
-                return get_failure_message_for_action(action_info.action_type, action_info.name, e)
+def execute_action(gameserver_config, password, action_info: ServerActionInfo) -> str:
+    if is_requested_server_under_maintenance(gameserver_config):
+        print('requested server is currently set to under maintenance! please update config when maintenance is done')
+        return 'Sorry! The server is under maintenance, and the server cannot be started at this time.'
     else:
-        server_status_message = 'running' if action_info.action_type == ActionType.START else 'stopped'
-        print(f'Tried {server_status_message} game server {action_info.name} but its already in that state')
-        return f'The action cannot be performed, the server is already {server_status_message}!'
+        if can_requested_action_be_executed(gameserver_config, password, action_info):
+            command = get_command_to_run(gameserver_config, password, action_info)
+
+            action_command = subprocess.run(command, text=True, capture_output=True, shell=True)
+            try:
+                action_command.check_returncode()
+                print(f'hey sick the command ran just fine and it printed {action_command.stdout}')
+                return get_success_message_for_action(action_info.action_type, action_info.name)
+            except subprocess.CalledProcessError as e:
+                if e.returncode == 1:
+                    if action_info.action_type != ActionType.STATUS:
+                        print('fuck the script failed to run dude what the hell')
+                        print(f'stdout: {e.stdout}')
+                        print(f'stderr: {e.stderr}')
+                    return get_fatal_failure_message_for_action(action_info.action_type, action_info.name, e)
+                else:
+                    print('something went wrong but the script might have gone thru')
+                    return get_failure_message_for_action(action_info.action_type, action_info.name, e)
+        else:
+            server_status_message = 'running' if action_info.action_type == ActionType.START else 'stopped'
+            print(f'Tried {server_status_message} game server {action_info.name} but its already in that state')
+            return f'The action cannot be performed, the server is already {server_status_message}!'
 
 
 def get_command_to_run(gameserver_config, password, action_info: ServerActionInfo) -> str:
@@ -75,6 +80,10 @@ def can_requested_action_be_executed(gameserver_config, password, action_info) -
     return False
 
 
+def is_requested_server_under_maintenance(gameserver_config) -> bool:
+    return gameserver_config['maintenance']
+
+
 def is_requested_server_currently_running(gameserver_config, password, action_info) -> bool:
     # dummy copy, won't require interaction token since it won't be used to make requests to discord
     new_action_info = ServerActionInfo(name=action_info.name, action_type=ActionType.STATUS, interaction_token='')
@@ -88,7 +97,7 @@ def is_requested_server_currently_running(gameserver_config, password, action_in
         return False
 
 
-def get_success_message_for_action(action: ActionType, name: str) -> str:
+def get_success_message_for_action(action: ActionType, name: str):
     if action == ActionType.START:
         return f'Game server {name} has been initiated, it may take some time to be up'
     elif action == ActionType.STATUS:
@@ -97,7 +106,7 @@ def get_success_message_for_action(action: ActionType, name: str) -> str:
         return f'Game server {name} has stopped successfully'
 
 
-def get_failure_message_for_action(action: ActionType, name: str, e: subprocess.CalledProcessError) -> str:
+def get_failure_message_for_action(action: ActionType, name: str, e: subprocess.CalledProcessError):
     if action == ActionType.START:
         return f'The startup script for {name} exited with a non-zero code (code {e.returncode}).' \
                f' This was the console output: ```{e.stdout + e.stderr}```'
@@ -109,7 +118,7 @@ def get_failure_message_for_action(action: ActionType, name: str, e: subprocess.
                f' This was the console output: ```{e.stdout + e.stderr}```'
 
 
-def get_fatal_failure_message_for_action(action: ActionType, name: str, e: subprocess.CalledProcessError) -> str:
+def get_fatal_failure_message_for_action(action: ActionType, name: str, e: subprocess.CalledProcessError):
     if action == ActionType.START:
         return f'The startup script for {name} ran into a fatal error and did not start up.' \
                f' This was the console output: ```{e.stdout + e.stderr}```'

@@ -2,6 +2,7 @@
   "name": "start",
   "type": 1,
   "description": "Start a game server",
+  "maintenance": false,
   "options": [
     {
       "name": "name",

@@ -2,6 +2,7 @@
   "name": "stop",
   "type": 1,
   "description": "Stop a game server",
+  "maintenance": false,
   "options": [
     {
       "name": "name",
