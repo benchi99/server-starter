@@ -81,7 +81,10 @@ def can_requested_action_be_executed(gameserver_config, password, action_info) -
 
 
 def is_requested_server_under_maintenance(gameserver_config) -> bool:
-    return gameserver_config['maintenance']
+    try:
+        return gameserver_config['maintenance']
+    except KeyError:
+        return False
 
 
 def is_requested_server_currently_running(gameserver_config, password, action_info) -> bool:
