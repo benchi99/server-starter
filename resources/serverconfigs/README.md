@@ -8,6 +8,7 @@ Here will live your configuration files for your game servers. The application w
 {
   "name": "name of your game server",
   "user": "linux user any commands will run under",
+  "maintenance": false,
   "start": {
     "allowed_users_to_run_command": [
       "user_id_in_discord_1",

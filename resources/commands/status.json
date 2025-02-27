@@ -2,7 +2,6 @@
   "name": "status",
   "type": 1,
   "description": "Check the status of a game server",
-  "maintenance": false,
   "options": [
     {
       "name": "name",
