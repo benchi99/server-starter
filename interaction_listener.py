@@ -25,4 +25,4 @@ def interactions():
 
 @app.route('/health', methods=['GET'])
 def test():
-    return jsonify({'status': 'UP'})
+    return jsonify({'status': 'UP', 'version': '1.2'})
