@@ -2,13 +2,29 @@
   "name": "status",
   "type": 1,
   "description": "Check the status of a game server",
+  "name_localizations": {
+    "es-ES": "estado",
+    "es-419": "estado"
+  },
+  "description_localizations": {
+    "es-ES": "Comprueba el estado de un servidor",
+    "es-419": "Comprueba el estado de un servidor"
+  },
   "options": [
     {
       "name": "name",
       "description": "name of the game server",
       "type": 3,
       "required": true,
-      "autocomplete": true
+      "autocomplete": true,
+      "name_localizations": {
+        "es-ES": "nombre",
+        "es-419": "nombre"
+      },
+      "description_localizations": {
+        "es-ES": "nombre del servidor a iniciar",
+        "es-419": "nombre del servidor a iniciar"
+      }
     }
   ]
 }

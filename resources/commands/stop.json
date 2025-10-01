@@ -2,13 +2,29 @@
   "name": "stop",
   "type": 1,
   "description": "Stop a game server",
+  "name_localizations": {
+    "es-ES": "parar",
+    "es-419": "detener"
+  },
+  "description_localizations": {
+    "es-ES": "Para un servidor",
+    "es-419": "Detiene un servidor"
+  },
   "options": [
     {
       "name": "name",
       "description": "name of the game server",
       "type": 3,
       "required": true,
-      "autocomplete": true
+      "autocomplete": true,
+      "name_localizations": {
+      "es-ES": "nombre",
+      "es-419": "nombre"
+    },
+      "description_localizations": {
+        "es-ES": "nombre del servidor a iniciar",
+        "es-419": "nombre del servidor a iniciar"
+      }
     }
   ]
 }

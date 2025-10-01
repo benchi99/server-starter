@@ -2,13 +2,29 @@
   "name": "start",
   "type": 1,
   "description": "Start a game server",
+  "name_localizations": {
+    "es-ES": "iniciar",
+    "es-419": "iniciar"
+  },
+  "description_localizations": {
+    "es-ES": "Inicia un servidor",
+    "es-419": "Inicia un servidor"
+  },
   "options": [
     {
       "name": "name",
       "description": "name of the game server",
       "type": 3,
       "required": true,
-      "autocomplete": true
+      "autocomplete": true,
+      "name_localizations": {
+        "es-ES": "nombre",
+        "es-419": "nombre"
+      },
+      "description_localizations": {
+        "es-ES": "nombre del servidor a iniciar",
+        "es-419": "nombre del servidor a iniciar"
+      }
     }
   ]
 }
