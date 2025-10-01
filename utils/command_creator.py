@@ -1,7 +1,7 @@
 import requests
 from utils.json_load_utils import load_json_data_from_path
 
-DISCORD_API_ENDPOINT = 'https://discord.com/api/v8'
+DISCORD_API_ENDPOINT = 'https://discord.com/api/v10'
 CREATE_COMMAND_URL = '/applications/{0}/guilds/{1}/commands'
 OAUTH_TOKEN_URL = '/oauth2/token'
 
@@ -42,6 +42,7 @@ def get_bearer_token(client_id, client_secret):
                                                                                                       client_secret))
 
     if auth_response.ok:
+        print('bearer token obtained successfully')
         return auth_response.json()['access_token']
     else:
         print(f'failed to get a bearer token response code {auth_response.status_code}, body: {auth_response.text}')

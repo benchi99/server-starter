@@ -1,7 +1,7 @@
 import os
 from discord_interactions import InteractionType, InteractionResponseType
 
-DISCORD_API_ENDPOINT = 'https://discord.com/api/v8'
+DISCORD_API_ENDPOINT = 'https://discord.com/api/v10'
 
 
 class Choice:
