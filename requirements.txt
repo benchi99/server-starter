@@ -3,3 +3,4 @@ uwsgi
 flask
 discord-interactions
 requests
+docker-py
