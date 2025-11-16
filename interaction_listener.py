@@ -1,7 +1,9 @@
 import os
 from flask import Flask, request, jsonify
 from discord_interactions import verify_key_decorator
-from structures import NewInteractionType as InteractionType
+
+from handlers.gameserver_handler import get_gameserver_configurations, is_requested_server_currently_running
+from structures import NewInteractionType as InteractionType, ServerActionInfo
 from handlers.interaction_handler import handle_slash_command_request, handle_autocompletion_request
 
 client_public_key = os.getenv('CLIENT_PUBLIC_KEY')
@@ -25,4 +27,14 @@ def interactions():
 
 @app.route('/health', methods=['GET'])
 def test():
-    return jsonify({'status': 'UP', 'version': '1.2'})
+    password = os.getenv('PASS')
+
+    server_statuses = list()
+    for gameserver_config in get_gameserver_configurations():
+        server_status = dict()
+        # spaghetti code yayyyyy i gotta refactor this stupid thing
+        server_status[gameserver_config.name] \
+            = is_requested_server_currently_running(gameserver_config, password, ServerActionInfo(gameserver_config.name, None, None))
+        server_statuses.insert(server_status)
+
+    return jsonify({'status': 'UP', 'version': '1.3', 'gameservers': server_statuses})
