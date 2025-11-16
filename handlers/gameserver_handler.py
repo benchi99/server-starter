@@ -72,11 +72,11 @@ def get_command_to_run(gameserver_config, password, action_info: ServerActionInf
 
 def can_requested_action_be_executed(gameserver_config, password, action_info) -> bool:
     if action_info.action_type == ActionType.START:
-        return not is_requested_server_currently_running(gameserver_config, password, action_info)
+        return is_requested_server_currently_running(gameserver_config, password, action_info)
     elif action_info.action_type == ActionType.STATUS:
         return True  # checking for status should always be allowed
     elif action_info.action_type == ActionType.STOP:
-        return is_requested_server_currently_running(gameserver_config, password, action_info)
+        return not is_requested_server_currently_running(gameserver_config, password, action_info)
     return False
 
 
@@ -95,9 +95,9 @@ def is_requested_server_currently_running(gameserver_config, password, action_in
 
     try:
         status_command.check_returncode()
-        return True
-    except subprocess.CalledProcessError:
         return False
+    except subprocess.CalledProcessError:
+        return True
 
 
 def get_success_message_for_action(action: ActionType, name: str):
@@ -107,6 +107,8 @@ def get_success_message_for_action(action: ActionType, name: str):
         return f'Server status of {name}: Server is running.'
     elif action == ActionType.STOP:
         return f'Game server {name} has stopped successfully'
+
+    return ''
 
 
 def get_failure_message_for_action(action: ActionType, name: str, e: subprocess.CalledProcessError):
@@ -120,6 +122,8 @@ def get_failure_message_for_action(action: ActionType, name: str, e: subprocess.
         return f'The script for stopping {name} exited with a non-zero code (code {e.returncode}).' \
                f' This was the console output: ```{e.stdout + e.stderr}```'
 
+    return ''
+
 
 def get_fatal_failure_message_for_action(action: ActionType, name: str, e: subprocess.CalledProcessError):
     if action == ActionType.START:
@@ -130,3 +134,5 @@ def get_fatal_failure_message_for_action(action: ActionType, name: str, e: subpr
     elif action == ActionType.STOP:
         return f'The script for stopping {name} ran into a fatal error and did not stop.' \
                f' The server is most likely still running. This was the console output: ```{e.stdout + e.stderr}```'
+
+    return ''
