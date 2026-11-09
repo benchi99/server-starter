@@ -1,0 +1,13 @@
+{
+  "name": "Pibble",
+  "type": 1,
+  "description": "It's Pibble",
+  "name_localizations": {
+    "es-ES": "Pibble",
+    "es-419": "Pibble"
+  },
+  "description_localizations": {
+    "es-ES": "Muestra a Pibble",
+    "es-419": "Displays Pibble"
+  }
+}

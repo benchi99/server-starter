@@ -18,3 +18,19 @@ def send_followup_response(text_content, action_info: ServerActionInfo, ephemera
         print(f'fucking idk discord is pretty sad they said {r.content}')
     else:
         print('responded to deferred interaction properly mate sick 😎')
+
+def send_pibble_image(action_info: ServerActionInfo):
+    with open("../img/pibble.png", 'rb') as f:
+        files = {
+            "file": ("../img/pibble.png", f, "image/png"),
+        }
+
+        url = action_info.get_new_followup_message_endpoint()
+
+        r = requests.post(url, files=files)
+
+        if not r.ok:
+            print(f'fucking idk discord is pretty sad they said {r.content}')
+        else:
+            print('responded to deferred interaction properly mate sick 😎')
+

@@ -15,6 +15,7 @@ class ActionType:
     START = 'start'
     STATUS = 'status'
     STOP = 'stop'
+    PIBBLE = 'pibble'
 
 
 class ServerActionInfo:

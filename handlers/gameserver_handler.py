@@ -2,7 +2,7 @@ import os
 from utils.json_load_utils import load_json_data_from_path
 import subprocess
 from structures import ServerActionInfo, ActionType
-from utils.api_utils import send_followup_response
+from utils.api_utils import send_followup_response, send_pibble_image
 
 
 def get_gameserver_configurations():
@@ -19,6 +19,11 @@ def get_gameserver_configuration_by_name(name):
 
 
 def perform_action(action_info: ServerActionInfo):
+    if action_info.action_type == ActionType.PIBBLE:
+        send_pibble_image(action_info)
+    
+        return
+    
     password = os.getenv('PASS')
 
     if password is not None:
@@ -77,6 +82,8 @@ def can_requested_action_be_executed(gameserver_config, password, action_info) -
         return True  # checking for status should always be allowed
     elif action_info.action_type == ActionType.STOP:
         return not is_requested_server_currently_running(gameserver_config, password, action_info)
+    elif action_info.action_type == ActionType.PIBBLE:
+        return True
     return False
 
 
@@ -107,6 +114,8 @@ def get_success_message_for_action(action: ActionType, name: str):
         return f'Server status of {name}: Server is running.'
     elif action == ActionType.STOP:
         return f'Game server {name} has stopped successfully'
+    elif action == ActionType.PIBBLE:
+        return f'It is Pibble'
 
     return ''
 
@@ -121,7 +130,9 @@ def get_failure_message_for_action(action: ActionType, name: str, e: subprocess.
     elif action == ActionType.STOP:
         return f'The script for stopping {name} exited with a non-zero code (code {e.returncode}).' \
                f' This was the console output: ```{e.stdout + e.stderr}```'
-
+    elif action == ActionType.PIBBLE:
+        return f'The script for stopping {name} exited with a non-zero code (code {e.returncode}).' \
+               f' This was the console output: ```{e.stdout + e.stderr}```'
     return ''
 
 
@@ -134,5 +145,7 @@ def get_fatal_failure_message_for_action(action: ActionType, name: str, e: subpr
     elif action == ActionType.STOP:
         return f'The script for stopping {name} ran into a fatal error and did not stop.' \
                f' The server is most likely still running. This was the console output: ```{e.stdout + e.stderr}```'
+    elif action == ActionType.PIBBLE:
+        return f'Pibble shat himself and could not make an appearance...'
 
     return ''
